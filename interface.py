@@ -20,12 +20,16 @@ frame.pack(expand = True, fill = 'both')
 root.geometry('400x500+550+130')
 
 # global vars
-person_id = 0
-names = []
+#person_id = 0
+#names = []
 name = ''
 dataset = pd.read_csv('dataframe.csv')
 people_df = dataset.iloc[:,0:2]
 people = pd.Series(people_df.name.values,index=people_df.id).to_dict()
+try:
+    person_id = max(dataset['id'].tolist())
+except ValueError:
+    person_id = 0
 
 
 
@@ -155,9 +159,15 @@ btn_intro.place(x = 120, y = 110)
 
 
 
-def recognition():
-
-    global people 
+def recognition(): 
+    
+    dataset = pd.read_csv('dataframe.csv')
+    people_df = dataset.iloc[:,0:2]
+    people = pd.Series(people_df.name.values,index=people_df.id).to_dict()
+    try:
+        person_id = max(dataset['id'].tolist())
+    except ValueError:
+        person_id = 0
 
     recognizer = cv2.face.LBPHFaceRecognizer.create() 
     recognizer.read('trainer.yml')
