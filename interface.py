@@ -56,8 +56,6 @@ def introduce():
         ############### Adding new person to the dataset ###############
 
         global person_id, dataset, people
-
-        #face_id = person_id
 	
         cam = cv2.VideoCapture(0)
         cam.set(3, 640) # set video width
@@ -85,8 +83,6 @@ def introduce():
                 img_numpy = np.array(cv2.rectangle(img, (x,y), (x+w,y+h), (255, 0, 0), 2), 'uint8')
 
 
-
-
                 # update dataset variable
                 dataset = pd.concat([
                     dataset,
@@ -97,14 +93,10 @@ def introduce():
                 dataset.to_csv('dataframe.csv', index=False)
 
 
-
-
-                # Save photo to the datasets folder
-                #cv2.imwrite("dataset/User." + str(face_id) + '.' +
-                           # str(count) + ".jpg", gray[y:y+h,x:x+w])
                 cv2.imshow('Look at the camera. Not here', img)
                 cv2.moveWindow('Look at the camera. Not here', 635, 200)
             
+
             k = cv2.waitKey(100) & 0xff # Press 'ESC' for exiting video
             if k == 27:
                 break
@@ -114,50 +106,24 @@ def introduce():
         cam.release()
         cv2.destroyAllWindows()
     
-        #person_id += 1
+        person_id += 1
 
         ########### Model training ###############
 
         print ("\n [INFO] I'm trying to memorize you. Wait ...")
 
         recognizer = cv2.face.LBPHFaceRecognizer.create() 
-
-        # function to get the images and label data
-        #def getImagesAndLabels(path):
-
-            #imagePaths = [os.path.join(path,f) for f in os.listdir(path)]
-            
-            #images_list = dataset('image').tolist()
-            #names_list = dataset('name').tolist()
-            
-            #for name,image in zip(names_list, images_list):
-
-            # for imagePath in imagePaths:
-            #     PIL_img = Image.open(imagePath).convert('L') # convert it to grayscale
-            #     img_numpy = np.array(PIL_img,'uint8')
-            #     id = int(os.path.split(imagePath)[-1].split(".")[1])
-                
-                #faces = face_detector.detectMultiScale(image)
-
-                #for (x,y,w,h) in faces:
-                    #faceSamples.append(image[y:y+h,x:x+w])
-                    #names_list.append(name)
-	
-            #return faceSamples,ids
-            
         
         images_list = dataset['image'].tolist()
         id_list = dataset['id'].tolist()
-        #names_list = dataset['name'].tolist()
-            
-        #faces,ids = getImagesAndLabels(path)
+
         recognizer.train(images_list, id_list)
 
         # Save the model into trainer/trainer.yml
         recognizer.save('trainer.yml') # recognizer.save() worked on Mac, but not on Pi
 
         # Print the numer of faces trained and end program
-        #print("\n [INFO] {0} faces trained. Exiting Program".format(len(np.unique(ids))))
+        print("\n [INFO] {0} faces trained. Exiting Program".format(len(np.unique(ids))))
 
 
     intro = tk.Tk()
@@ -169,8 +135,6 @@ def introduce():
     
     the_name = tk.Entry(intro)
     the_name.place(x = 120, y = 55)
-
-    #the_name = input('\n Your name pleassss ==>  ')
     
     btn_save = tk.Button(intro, text = 'Save name', 
               command = save_name)
@@ -194,8 +158,6 @@ btn_intro.place(x = 120, y = 110)
 def recognition():
 
     global people 
-    #global names, name
-    #names.append(name)
 
     recognizer = cv2.face.LBPHFaceRecognizer.create() 
     recognizer.read('trainer.yml')
@@ -232,8 +194,6 @@ def recognition():
             cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
             id, confidence = recognizer.predict(gray[y:y + h, x:x + w])
 
-            print(people) ### empty dictionary ###################################################
-
             # infer name from id
             person = people[id]
 
@@ -258,6 +218,7 @@ def recognition():
                 (255, 255, 255),
                 2
             )
+            
             # Write how confident model is
             cv2.putText(
                 img, 
